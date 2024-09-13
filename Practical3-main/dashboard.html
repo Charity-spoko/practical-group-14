@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+    />
+    <title>Document</title>
+    <link rel="stylesheet" href="./css/site.css" />
+  </head>
+  <body>
+    <div class="header">
+      <div class="toggle">
+        <a id="toggle-nav"><i class="fa fa-navicon cog"></i></a>
+      </div>
+    </div>
+    <div class="container">
+      <div class="sidebar" id="sidebar">
+        <a class="myAnchor" href="dashboard.html"><i class="fa fa-home"></i> Dashboard</a>
+        <a class="myAnchor" href="form.html"><i class="fa fa-shopping-cart"></i> Forms</a>
+        <a class="myAnchor" href="tables.html"><i class="fa fa-shopping-bag"></i> Tables</a>
+      </div>
+      <div class="content">
+        <div class="summary-container">
+          <div class="summary">
+            <div class="summary-icon"><i class="fa fa-users"></i></div>
+            <div class="summary-content">
+              <div class="summary-heading">Users</div>
+              <div id="myheading"><h2>0</h2></div>
+            </div>
+          </div>
+          <div class="summary">
+            <div class="summary-icon"><i class="fa fa-signal"></i></div>
+            <div class="summary-content">
+              <div class="summary-heading">Products</div>
+              <div id="myheading"><h2>0</h2></div>
+            </div>
+          </div>
+          <div class="summary">
+            <div class="summary-icon"><i class="fa fa-shopping-cart"></i></div>
+            <div class="summary-content">
+              <div id="appending" class="summary-heading">Sales</div>
+              <div id="myheading"><h2>0</h2></div>
+            </div>
+          </div>
+          <div class="summary">
+            <div class="summary-icon"><i class="fa fa-line-chart"></i></div>
+            <div class="summary-content">
+              <div class="summary-heading">Profit</div>
+              <div id="myheading"><h2>0</h2></div>
+            </div>
+          </div>
+        </div>
+        <div class="charts-container"></div>
+      </div>
+    </div>
+    <div>
+      <canvas id="myChart"></canvas>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+      fetch("http://localhost:3000/dash_stats").then(response => {
+        if(response.ok) {
+          return response.json();
+        }
+        else {
+          throw Error("Failed to connect...")
+        }
+      }).then((data) => {
+        // console.log(data);
+        // console.log(data["users"]);
+        const usersHeading = document.querySelector(".summary:nth-child(1) h2");
+        usersHeading.innerText = `${data.users}`;
+
+        const productsHeading = document.querySelector(".summary:nth-child(2) h2");
+        productsHeading.innerText = `${data.products}`;
+
+        const salesHeading = document.querySelector(".summary:nth-child(3) h2");
+        salesHeading.innerText = `${data.sales}`;
+
+        const profitHeading = document.querySelector(".summary:nth-child(4) h2");
+        profitHeading.innerText = `${data.profit}`; 
+
+
+      }).catch(error => {
+        console.log(error);
+      })
+
+      // fetching data from a fake api
+      fetch("http://localhost:3000/sold_products_by_categories").then(response => {
+        if(response.ok) {
+          return response.json();
+        }
+        else {
+          throw Error("Failed to connect...")
+        }
+      }).then((data) => {
+        const mydata = (data["category"]);
+        const mydata1 = (data["count"]);
+
+        let emptyArray = "";
+        let emptyArray1 = "";
+
+        for(let all of mydata) {
+          emptyArray = mydata[all];
+        }
+
+        for(let all of mydata1) {
+          emptyArray1 = mydata1[all];
+        }
+
+        new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: mydata,
+      datasets: [{
+        label: 'categories',
+        data: mydata1,
+        borderWidth: 1
+      }]
+    },
+    options: {
+      scales: {
+        y: {
+          beginAtZero: true
+        }
+      }
+    }
+  });
+
+        
+      }).catch((error) => {
+        console.log(error);
+      })
+
+      const ctx = document.getElementById('myChart');
+
+  
+
+
+
+      $("document").ready(() => {});
+      const myToggle = document.getElementById("toggle-nav");
+      const sidebar = document.getElementById("sidebar");
+      myToggle.addEventListener("click", () => {
+        // Toggle the visibility of the sidebar anchors
+        if (sidebar.classList.contains("hidden")) {
+          sidebar.classList.remove("hidden");
+        } else {
+          sidebar.classList.add("hidden");
+        }
+      });
+    </script>
+  </body>
+</html>
